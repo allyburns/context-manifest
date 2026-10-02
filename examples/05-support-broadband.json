@@ -1,0 +1,95 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Rivernet Support",
+    "url": "https://support.rivernet.example",
+    "operator": "Rivernet Broadband plc",
+    "privacy_policy": "https://rivernet.example/privacy"
+  },
+  "purpose": "Fix your connection without repeating yourself.",
+  "requests": [
+    {
+      "id": "devices",
+      "scope": "context:devices.read",
+      "ask": "What router and devices are involved?",
+      "why": "Skips the model-number hunt and goes straight to the right fix.",
+      "feature": "diagnosis",
+      "schema": { "type": "array", "items": { "type": "object", "properties": { "kind": { "type": "string" }, "model": { "type": "string" } } }, "maxItems": 10 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [[{ "kind": "router", "model": "Hub 5" }, { "kind": "laptop", "model": "MacBook Air M3" }]]
+    },
+    {
+      "id": "x-steps_tried",
+      "scope": "context:x-steps_tried.read",
+      "ask": "What have you already tried?",
+      "why": "Nobody will ask you to turn it off and on again if you already have.",
+      "feature": "diagnosis",
+      "schema": { "type": "array", "items": { "type": "string" }, "maxItems": 15 },
+      "class": "preference",
+      "retention": "session",
+      "derive": true
+    },
+    {
+      "id": "x-symptom_timeline",
+      "scope": "context:x-symptom_timeline.read",
+      "ask": "When did it start and what changed around then?",
+      "why": "Most faults are explained by what changed.",
+      "feature": "diagnosis",
+      "schema": { "type": "string", "maxLength": 500 },
+      "class": "preference",
+      "retention": "session",
+      "derive": false
+    },
+    {
+      "id": "x-contact_window",
+      "scope": "context:x-contact_window.read",
+      "ask": "When's a good time for us to call back?",
+      "why": "So an engineer doesn't ring during your meeting.",
+      "feature": "callback",
+      "schema": { "type": "object", "properties": { "days": { "type": "array", "items": { "type": "string" } }, "start": { "type": "string" }, "end": { "type": "string" } } },
+      "class": "preference",
+      "retention": "session",
+      "derive": true
+    },
+    {
+      "id": "x-household_devices_count",
+      "scope": "context:x-household_devices_count.read",
+      "ask": "Roughly how many devices are on the network?",
+      "why": "Tells us whether the plan or the router is the problem.",
+      "feature": "diagnosis",
+      "schema": { "type": "integer", "minimum": 1, "maximum": 200 },
+      "class": "people",
+      "retention": "session",
+      "derive": false
+    }
+  ],
+  "offers": [
+    {
+      "id": "x-ticket_outcome",
+      "scope": "context:x-ticket_outcome.offer",
+      "what": "What the fault was and what fixed it.",
+      "why": "Next time your assistant can say \"last time it was the DNS setting\".",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "preference",
+      "provenance": "stated"
+    },
+    {
+      "id": "service_events",
+      "scope": "context:service_events.offer",
+      "what": "Outages on your line, engineer visits, plan changes.",
+      "why": "Your assistant knows there was an outage before you do.",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "preference",
+      "provenance": "observed"
+    }
+  ],
+  "endpoints": {
+    "mcp": "https://mcp.rivernet.example",
+    "paste": "https://support.rivernet.example/context/paste",
+    "manage": "https://rivernet.example/account/context",
+    "revoke": "https://rivernet.example/account/context/revoke"
+  }
+}

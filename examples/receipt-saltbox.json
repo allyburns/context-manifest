@@ -1,0 +1,38 @@
+{
+  "spec": "context-manifest/0.1",
+  "kind": "share",
+  "receipt_id": "rcpt_01J9SBX3QK",
+  "manifest_hash": "sha256:198e8431fe57e5dfbbff6c6ccdae4fa330bb32d9863c3b88b1dee067a4a77406",
+  "issued": "2026-09-26T21:14:02Z",
+  "stored": [
+    {
+      "id": "diet",
+      "retention": "saved",
+      "expires": "2027-09-26T21:14:02Z",
+      "provenance": "derived"
+    },
+    {
+      "id": "equipment",
+      "retention": "saved",
+      "expires": "2027-09-26T21:14:02Z",
+      "provenance": "derived"
+    }
+  ],
+  "session_only": [
+    "upcoming_events",
+    "allergies"
+  ],
+  "declined": [
+    "household_size"
+  ],
+  "rejected": [],
+  "offers": [
+    {
+      "id": "x-cooked_and_rated",
+      "fetch": "mcp"
+    }
+  ],
+  "manage": "https://saltbox.example/context",
+  "revoke": "https://saltbox.example/context/revoke",
+  "paste_code": "SBX-7K2QM4XD"
+}

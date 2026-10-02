@@ -1,0 +1,27 @@
+{
+  "spec": "context-manifest/0.1",
+  "manifest_hash": "sha256:198e8431fe57e5dfbbff6c6ccdae4fa330bb32d9863c3b88b1dee067a4a77406",
+  "origin": "https://saltbox.example",
+  "issued": "2026-10-14T18:02:40Z",
+  "offers": [
+    {
+      "id": "x-cooked_and_rated",
+      "provenance": "observed",
+      "as_of": "2026-10-14T18:02:40Z",
+      "value": [
+        {
+          "recipe": "Mushroom and leek pie",
+          "cooked": "2026-10-04",
+          "rating": 5,
+          "times_cooked": 2
+        },
+        {
+          "recipe": "Sweet potato katsu curry",
+          "cooked": "2026-10-11",
+          "rating": 3,
+          "times_cooked": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "spec": "context-manifest/0.1",
+  "error": "unknown_manifest_hash",
+  "message": "This manifest has changed since you read it. Fetch it again and ask the user before sending."
+}

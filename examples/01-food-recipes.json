@@ -1,0 +1,148 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Saltbox",
+    "url": "https://saltbox.example",
+    "operator": "Saltbox Kitchen Ltd",
+    "privacy_policy": "https://saltbox.example/privacy"
+  },
+  "purpose": "Recipes and meal plans that fit your kitchen, your diet and your week.",
+  "requests": [
+    {
+      "id": "diet",
+      "scope": "context:diet.read",
+      "ask": "How do you eat, and is there anything you won't touch?",
+      "why": "Filters every recipe so the first page you see is food you would cook.",
+      "feature": "recipe_filter",
+      "schema": {
+        "type": "object",
+        "required": ["pattern"],
+        "properties": {
+          "pattern": { "type": "string", "enum": ["no restrictions", "vegetarian", "vegan", "pescatarian"] },
+          "dislikes": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 20 }
+        }
+      },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [{ "pattern": "vegetarian", "dislikes": ["coriander"] }]
+    },
+    {
+      "id": "equipment",
+      "scope": "context:equipment.read",
+      "ask": "What do you have in your kitchen to cook with?",
+      "why": "Picks methods that work with what you've got, so no recipe needs a gadget you don't own.",
+      "feature": "method_picker",
+      "schema": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 12 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [["air fryer", "slow cooker", "no oven"]]
+    },
+    {
+      "id": "household_size",
+      "scope": "context:household_size.read",
+      "ask": "How many people do you usually cook for?",
+      "why": "Scales recipes and shopping lists to the right number of portions.",
+      "feature": "portion_scaling",
+      "schema": { "type": "integer", "minimum": 1, "maximum": 12 },
+      "class": "people",
+      "retention": "saved",
+      "ttl": "P180D",
+      "derive": false,
+      "examples": [2]
+    },
+    {
+      "id": "upcoming_events",
+      "scope": "context:upcoming_events.read",
+      "ask": "Cooking for anything special soon?",
+      "why": "The occasion planner builds a menu and a cooking timeline for the day.",
+      "feature": "occasion_planner",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["date"],
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "occasion": { "type": "string", "maxLength": 60 }
+          }
+        },
+        "maxItems": 3
+      },
+      "class": "plan",
+      "retention": "session",
+      "derive": false,
+      "examples": [[{ "date": "2026-10-10", "occasion": "dinner for friends" }]]
+    },
+    {
+      "id": "allergies",
+      "scope": "context:allergies.read",
+      "ask": "Do you have any food allergies?",
+      "why": "Every recipe is checked against them for this visit only. They are never stored.",
+      "feature": "allergen_check",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "enum": ["celery", "gluten", "crustaceans", "eggs", "fish", "lupin", "milk", "molluscs", "mustard", "tree nuts", "peanuts", "sesame", "soya", "sulphites"]
+        },
+        "maxItems": 14
+      },
+      "class": "protected",
+      "retention": "session",
+      "derive": false,
+      "examples": [["sesame"]]
+    }
+  ],
+  "offers": [
+    {
+      "id": "x-cooked_and_rated",
+      "scope": "context:x-cooked_and_rated.offer",
+      "what": "Recipes you cooked, how you rated them, and the ones you made more than once.",
+      "why": "Your assistant learns which recipes you cook and how they turned out.",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "recipe": { "type": "string" },
+            "cooked": { "type": "string", "format": "date" },
+            "rating": { "type": "integer", "minimum": 1, "maximum": 5 },
+            "times_cooked": { "type": "integer", "minimum": 1 }
+          }
+        }
+      },
+      "class": "preference",
+      "provenance": "observed",
+      "cadence": "on_request"
+    },
+    {
+      "id": "x-pantry_staples",
+      "scope": "context:x-pantry_staples.offer",
+      "what": "Ingredients you nearly always have in, worked out from your shopping lists.",
+      "why": "Lets your assistant suggest a meal from what's already in the cupboard.",
+      "schema": { "type": "array", "items": { "type": "string" } },
+      "class": "preference",
+      "provenance": "derived",
+      "cadence": "on_request"
+    }
+  ],
+  "endpoints": {
+    "mcp": "https://mcp.saltbox.example",
+    "share": "https://saltbox.example/context/share",
+    "paste": "https://saltbox.example/context/paste",
+    "manage": "https://saltbox.example/context",
+    "revoke": "https://saltbox.example/context/revoke"
+  },
+  "i18n": {
+    "es": {
+      "purpose": "Recetas y menús que se adaptan a tu cocina, tu dieta y tu semana.",
+      "requests": {
+        "diet": { "ask": "¿Cómo comes y hay algo que no comas nunca?", "why": "Filtra cada receta para que la primera página sea comida que de verdad cocinarías." }
+      }
+    }
+  }
+}

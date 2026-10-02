@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/allyburns/context-manifest/main/schema/offer-delivery.schema.json",
+  "title": "Context Manifest Offer Delivery 0.1",
+  "type": "object",
+  "required": ["spec", "manifest_hash", "origin", "issued", "offers"],
+  "additionalProperties": false,
+  "properties": {
+    "spec": { "type": "string", "pattern": "^context-manifest/0\\.1$" },
+    "manifest_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "origin": { "type": "string", "format": "uri" },
+    "issued": { "type": "string", "format": "date-time" },
+    "offers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "provenance", "as_of", "value"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "provenance": { "type": "string", "enum": ["observed", "stated", "derived"] },
+          "as_of": { "type": "string", "format": "date-time" },
+          "value": {}
+        }
+      }
+    }
+  }
+}

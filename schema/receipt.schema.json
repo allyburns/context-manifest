@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/allyburns/context-manifest/main/schema/receipt.schema.json",
+  "title": "Context Manifest Receipt 0.1",
+  "type": "object",
+  "required": ["spec", "kind", "receipt_id", "manifest_hash", "issued"],
+  "additionalProperties": false,
+  "properties": {
+    "spec": { "type": "string", "pattern": "^context-manifest/0\\.1$" },
+    "kind": { "type": "string", "enum": ["share", "revocation", "held"] },
+    "receipt_id": { "type": "string", "maxLength": 64 },
+    "manifest_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "issued": { "type": "string", "format": "date-time" },
+    "stored": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "retention", "expires", "provenance"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "retention": { "const": "saved" },
+          "expires": { "type": "string", "format": "date-time" },
+          "provenance": { "type": "string", "enum": ["stated", "derived"] },
+          "about": { "type": "string", "enum": ["self", "other"] }
+        }
+      }
+    },
+    "session_only": { "type": "array", "items": { "type": "string" } },
+    "declined": { "type": "array", "items": { "type": "string" } },
+    "rejected": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "reason"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "reason": { "type": "string", "enum": ["schema_mismatch", "unknown_id", "retention_upgrade", "low_confidence", "other"] }
+        }
+      }
+    },
+    "deleted": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "also_deleted": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "offers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": { "id": { "type": "string" }, "fetch": { "type": "string", "enum": ["mcp", "http", "paste"] } }
+      }
+    },
+    "manage": { "type": "string", "format": "uri" },
+    "revoke": { "type": "string", "format": "uri" },
+    "paste_code": { "type": "string", "pattern": "^([A-Z0-9]{1,6}-)?[A-Z2-7]{8,16}$" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "kind": { "const": "share" } }, "required": ["kind"] },
+      "then": { "required": ["stored", "session_only", "declined", "rejected"], "not": { "required": ["deleted"] } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "revocation" } }, "required": ["kind"] },
+      "then": { "required": ["deleted"] }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "held" } }, "required": ["kind"] },
+      "then": { "required": ["stored", "session_only"], "not": { "required": ["deleted"] } }
+    }
+  ]
+}

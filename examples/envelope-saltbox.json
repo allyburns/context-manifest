@@ -1,0 +1,69 @@
+{
+  "spec": "context-manifest/0.1",
+  "manifest_hash": "sha256:198e8431fe57e5dfbbff6c6ccdae4fa330bb32d9863c3b88b1dee067a4a77406",
+  "sent": "2026-09-26T21:14:00Z",
+  "agent": {
+    "name": "Claude",
+    "client": "claude.ai",
+    "account_hint": "a…@…"
+  },
+  "about": "self",
+  "answers": [
+    {
+      "id": "diet",
+      "value": {
+        "pattern": "vegetarian",
+        "dislikes": [
+          "coriander"
+        ]
+      },
+      "provenance": "derived",
+      "confidence": 0.85,
+      "asked_user": false,
+      "retention": "saved"
+    },
+    {
+      "id": "equipment",
+      "value": [
+        "air fryer",
+        "slow cooker"
+      ],
+      "provenance": "derived",
+      "confidence": 0.65,
+      "asked_user": false,
+      "retention": "saved"
+    },
+    {
+      "id": "household_size",
+      "provenance": "declined"
+    },
+    {
+      "id": "upcoming_events",
+      "value": [
+        {
+          "date": "2026-10-10",
+          "occasion": "dinner for friends"
+        }
+      ],
+      "provenance": "stated",
+      "asked_user": true,
+      "retention": "session"
+    },
+    {
+      "id": "allergies",
+      "value": [
+        "sesame"
+      ],
+      "provenance": "stated",
+      "asked_user": true,
+      "retention": "session"
+    }
+  ],
+  "offers_accepted": [
+    "x-cooked_and_rated"
+  ],
+  "session": {
+    "hint": "web-3f9a",
+    "expires": "2026-09-27T21:14:00Z"
+  }
+}

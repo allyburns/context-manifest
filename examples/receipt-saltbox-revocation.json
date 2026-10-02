@@ -1,0 +1,20 @@
+{
+  "spec": "context-manifest/0.1",
+  "kind": "revocation",
+  "receipt_id": "rcpt_01JA2SBX9TW",
+  "manifest_hash": "sha256:198e8431fe57e5dfbbff6c6ccdae4fa330bb32d9863c3b88b1dee067a4a77406",
+  "issued": "2026-11-02T09:30:11Z",
+  "deleted": [
+    {
+      "id": "diet",
+      "also_deleted": [
+        "x-recommended_for_you"
+      ]
+    },
+    {
+      "id": "equipment"
+    }
+  ],
+  "manage": "https://saltbox.example/context",
+  "revoke": "https://saltbox.example/context/revoke"
+}

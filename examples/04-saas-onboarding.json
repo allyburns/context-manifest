@@ -1,0 +1,101 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Ledgerline",
+    "url": "https://ledgerline.example",
+    "operator": "Ledgerline Inc",
+    "privacy_policy": "https://ledgerline.example/privacy"
+  },
+  "purpose": "Project tracking that's set up for how your team already works.",
+  "requests": [
+    {
+      "id": "role",
+      "scope": "context:role.read",
+      "ask": "What's your role?",
+      "why": "Shows the views that matter for your job and hides the rest.",
+      "feature": "default_views",
+      "schema": { "type": "string", "maxLength": 60 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": ["founder", "engineering manager", "designer"]
+    },
+    {
+      "id": "team_size",
+      "scope": "context:team_size.read",
+      "ask": "How big is the team using this?",
+      "why": "Picks a plan and a template that fits instead of the enterprise one.",
+      "feature": "plan_recommendation",
+      "schema": { "type": "string", "enum": ["solo", "2_5", "6_20", "21_100", "100_plus"] },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true
+    },
+    {
+      "id": "tools",
+      "scope": "context:tools.read",
+      "ask": "What do you already use day to day?",
+      "why": "Turns on the right integrations before you go looking for them.",
+      "feature": "integrations",
+      "schema": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [["GitHub", "Slack", "Notion", "Linear"]]
+    },
+    {
+      "id": "zoneinfo",
+      "scope": "context:zoneinfo.read",
+      "ask": "What time zone are you in?",
+      "why": "Due dates and reminders land at sensible hours.",
+      "feature": "scheduling",
+      "schema": { "type": "string", "maxLength": 64 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": ["Europe/London"]
+    },
+    {
+      "id": "x-working_hours",
+      "scope": "context:x-working_hours.read",
+      "ask": "When do you actually work?",
+      "why": "Notifications stay quiet outside these hours.",
+      "feature": "notifications",
+      "schema": { "type": "object", "properties": { "days": { "type": "array", "items": { "type": "string" } }, "start": { "type": "string" }, "end": { "type": "string" } } },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true
+    }
+  ],
+  "offers": [
+    {
+      "id": "x-workspace_conventions",
+      "scope": "context:x-workspace_conventions.offer",
+      "what": "Naming conventions, labels, workflow states your team settled on.",
+      "why": "The next tool you set up can start from these instead of defaults.",
+      "schema": { "type": "object" },
+      "class": "preference",
+      "provenance": "observed"
+    },
+    {
+      "id": "x-active_projects",
+      "scope": "context:x-active_projects.offer",
+      "what": "Names and one-line descriptions of projects you're currently in.",
+      "why": "Your assistant stops asking which project you mean.",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "preference",
+      "provenance": "stated"
+    }
+  ],
+  "endpoints": {
+    "mcp": "https://mcp.ledgerline.example",
+    "paste": "https://ledgerline.example/context/paste",
+    "manage": "https://ledgerline.example/settings/context",
+    "revoke": "https://ledgerline.example/settings/context/revoke"
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Kestrel Car Insurance",
+    "url": "https://kestrel.example",
+    "operator": "Kestrel Insurance Ltd",
+    "privacy_policy": "https://kestrel.example/privacy"
+  },
+  "purpose": "A car insurance quote without the forty-question form.",
+  "requests": [
+    {
+      "id": "x-vehicle",
+      "scope": "context:x-vehicle.read",
+      "ask": "Which car is this quote for? It might not be yours.",
+      "why": "Starts the quote on the right vehicle. We ask, we don't assume.",
+      "feature": "quote",
+      "schema": { "type": "object", "properties": { "make": { "type": "string" }, "model": { "type": "string" }, "year": { "type": "integer" }, "owner": { "type": "string", "enum": ["me", "partner", "family", "other"] } } },
+      "class": "people",
+      "retention": "session",
+      "derive": false,
+      "about": "either"
+    },
+    {
+      "id": "x-annual_mileage",
+      "scope": "context:x-annual_mileage.read",
+      "ask": "Roughly how far is it driven in a year?",
+      "why": "One of the biggest inputs to your price.",
+      "feature": "quote",
+      "schema": { "type": "string", "enum": ["under_5000", "5000_10000", "10000_20000", "over_20000"] },
+      "class": "preference",
+      "retention": "session",
+      "derive": true
+    },
+    {
+      "id": "x-named_drivers",
+      "scope": "context:x-named_drivers.read",
+      "ask": "Who else drives it? Just how many and their rough ages, no names.",
+      "why": "Named drivers change the price. Names come later, on the form, if you proceed.",
+      "feature": "quote",
+      "schema": { "type": "array", "items": { "type": "object", "properties": { "age_band": { "type": "string" }, "relation": { "type": "string" } } }, "maxItems": 4 },
+      "class": "people",
+      "retention": "session",
+      "derive": false,
+      "about": "other"
+    },
+    {
+      "id": "x-claims_history",
+      "scope": "context:x-claims_history.read",
+      "ask": "Any claims or convictions in the last five years?",
+      "why": "Required by every insurer. We ask you directly and never guess.",
+      "feature": "quote",
+      "schema": { "type": "object", "properties": { "claims": { "type": "integer" }, "convictions": { "type": "integer" } } },
+      "class": "protected",
+      "retention": "session",
+      "derive": false
+    },
+    {
+      "id": "date_of_birth",
+      "scope": "context:date_of_birth.read",
+      "ask": "Your date of birth, for the quote only.",
+      "why": "Age is a rating factor. Held for this session, not saved.",
+      "feature": "quote",
+      "schema": { "type": "string", "format": "date" },
+      "class": "protected",
+      "retention": "session",
+      "derive": false
+    }
+  ],
+  "offers": [
+    {
+      "id": "x-policy_summary",
+      "scope": "context:x-policy_summary.offer",
+      "what": "Renewal date, cover level, excess, what's included.",
+      "why": "Your assistant can warn you a month before renewal and compare like for like.",
+      "schema": { "type": "object" },
+      "class": "preference",
+      "provenance": "stated"
+    }
+  ],
+  "endpoints": {
+    "paste": "https://kestrel.example/quote/context",
+    "manage": "https://kestrel.example/account/context",
+    "revoke": "https://kestrel.example/account/context/revoke"
+  },
+  "ext": {
+    "notes": "Deliberately session-only throughout. The two protected requests illustrate: (a) the site must show the why; (b) the agent must not answer from memory even if it knows the user's date of birth; (c) the manifest never asks for licence numbers, registration plates or names, which belong on the authenticated form, not in a manifest."
+  }
+}

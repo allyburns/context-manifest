@@ -1,0 +1,97 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Wayfarer",
+    "url": "https://wayfarer.example",
+    "operator": "Wayfarer Travel Ltd",
+    "privacy_policy": "https://wayfarer.example/privacy"
+  },
+  "purpose": "Book flights and stays without re-entering who you are.",
+  "requests": [
+    {
+      "id": "seat_preferences",
+      "scope": "context:seat_preferences.read",
+      "ask": "Window or aisle, front or back?",
+      "why": "Pre-selects seats so you're not choosing under a countdown timer.",
+      "feature": "seat_select",
+      "schema": { "type": "object", "properties": { "seat": { "type": "string", "enum": ["window", "aisle", "any"] }, "position": { "type": "string", "enum": ["front", "back", "any"] } } },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P730D",
+      "derive": true
+    },
+    {
+      "id": "stay_preferences",
+      "scope": "context:stay_preferences.read",
+      "ask": "What matters in a place to stay?",
+      "why": "Filters and ranks stays by what matters to you.",
+      "feature": "stay_search",
+      "schema": { "type": "array", "items": { "type": "string" }, "maxItems": 8 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P730D",
+      "derive": true,
+      "examples": [["quiet", "kitchen", "walkable", "no_hostels"]]
+    },
+    {
+      "id": "travel_plans",
+      "scope": "context:travel_plans.read",
+      "ask": "Where and when are you thinking of going?",
+      "why": "Opens straight onto the right search instead of a blank form.",
+      "feature": "search_prefill",
+      "schema": { "type": "array", "items": { "type": "object", "properties": { "from": { "type": "string", "format": "date" }, "to": { "type": "string", "format": "date" }, "places": { "type": "array", "items": { "type": "string" } } } } },
+      "class": "plan",
+      "retention": "session",
+      "derive": false
+    },
+    {
+      "id": "party",
+      "scope": "context:party.read",
+      "ask": "Who's travelling with you?",
+      "why": "Sets passenger counts and room types. Names are never needed here.",
+      "feature": "search_prefill",
+      "schema": { "type": "object", "properties": { "adults": { "type": "integer", "minimum": 1 }, "children": { "type": "integer", "minimum": 0 }, "infants": { "type": "integer", "minimum": 0 } } },
+      "class": "people",
+      "retention": "session",
+      "derive": false,
+      "about": "either"
+    },
+    {
+      "id": "accessibility_needs",
+      "scope": "context:accessibility_needs.read",
+      "ask": "Any access needs we should plan around?",
+      "why": "Filters to step-free stays and flags assistance at the airport.",
+      "feature": "accessibility",
+      "schema": { "type": "array", "items": { "type": "string" } },
+      "class": "protected",
+      "retention": "session",
+      "derive": false
+    }
+  ],
+  "offers": [
+    {
+      "id": "itinerary",
+      "scope": "context:itinerary.offer",
+      "what": "Confirmed bookings: dates, places, references, check-in times.",
+      "why": "Book once and your assistant, your watch and every other app you allow knows you're in Lima on the 12th.",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "plan",
+      "provenance": "stated"
+    },
+    {
+      "id": "x-places_stayed",
+      "scope": "context:x-places_stayed.offer",
+      "what": "Where you've stayed and how you rated it.",
+      "why": "So \"somewhere like that place in Cusco\" means something.",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "preference",
+      "provenance": "observed"
+    }
+  ],
+  "endpoints": {
+    "mcp": "https://mcp.wayfarer.example",
+    "paste": "https://wayfarer.example/context/paste",
+    "manage": "https://wayfarer.example/account/context",
+    "revoke": "https://wayfarer.example/account/context/revoke"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/allyburns/context-manifest/main/schema/answer-envelope.schema.json",
+  "title": "Context Manifest Answer Envelope 0.1",
+  "type": "object",
+  "required": ["spec", "manifest_hash", "sent", "agent", "about", "answers"],
+  "additionalProperties": false,
+  "properties": {
+    "spec": { "type": "string", "pattern": "^context-manifest/0\\.1$" },
+    "manifest_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "sent": { "type": "string", "format": "date-time" },
+    "agent": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name": { "type": "string", "maxLength": 60 },
+        "client": { "type": "string", "maxLength": 60 },
+        "account_hint": { "type": "string", "pattern": "^[^@.\\s]{0,2}…@…$" }
+      }
+    },
+    "about": { "type": "string", "enum": ["self", "other"] },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "provenance"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "value": {},
+          "provenance": { "type": "string", "enum": ["stated", "derived", "declined"] },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "asked_user": { "type": "boolean" },
+          "retention": { "type": "string", "enum": ["session", "saved"] },
+          "about": { "type": "string", "enum": ["self", "other"] }
+        },
+        "allOf": [
+          { "if": { "properties": { "provenance": { "const": "derived" } } }, "then": { "required": ["value", "retention", "confidence"] } },
+          { "if": { "properties": { "provenance": { "const": "stated" } } }, "then": { "required": ["value", "retention"] } },
+          { "if": { "properties": { "provenance": { "const": "declined" } } }, "then": { "not": { "required": ["value"] } } }
+        ]
+      }
+    },
+    "offers_accepted": { "type": "array", "items": { "type": "string" } },
+    "session": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hint": { "type": "string", "maxLength": 32 },
+        "expires": { "type": "string", "format": "date-time" }
+      }
+    }
+  }
+}

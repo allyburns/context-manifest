@@ -1,0 +1,116 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Northwind Outfitters",
+    "url": "https://northwind.example",
+    "operator": "Northwind Outfitters Ltd",
+    "privacy_policy": "https://northwind.example/privacy"
+  },
+  "purpose": "Outdoor clothing that fits first time.",
+  "requests": [
+    {
+      "id": "sizes",
+      "scope": "context:sizes.read",
+      "ask": "What sizes do you usually take?",
+      "why": "Shows you only what fits and hides what won't.",
+      "feature": "fit_filter",
+      "schema": {
+        "type": "object",
+        "properties": {
+          "top": { "type": "string" }, "bottom": { "type": "string" }, "shoe": { "type": "string" },
+          "system": { "type": "string", "enum": ["UK", "EU", "US"] }
+        }
+      },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [{ "top": "M", "bottom": "32", "shoe": "8", "system": "UK" }]
+    },
+    {
+      "id": "ethical_filters",
+      "scope": "context:ethical_filters.read",
+      "ask": "Anything you avoid on principle?",
+      "why": "Filters out materials and brands you'd rather not see.",
+      "feature": "catalogue_filter",
+      "schema": { "type": "array", "items": { "type": "string", "enum": ["no_leather", "no_down", "no_wool", "recycled_only", "no_fast_fashion"] } },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true,
+      "examples": [["no_leather", "no_down"]]
+    },
+    {
+      "id": "brands_avoided",
+      "scope": "context:brands_avoided.read",
+      "ask": "Any brands you don't want to see?",
+      "why": "We'll leave them out of your results.",
+      "feature": "catalogue_filter",
+      "schema": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+      "class": "preference",
+      "retention": "saved",
+      "ttl": "P365D",
+      "derive": true
+    },
+    {
+      "id": "budget_band",
+      "scope": "context:budget_band.read",
+      "ask": "Roughly what do you like to spend on a jacket?",
+      "why": "Sorts results so you don't scroll past what you'd never buy.",
+      "feature": "sort_default",
+      "schema": { "type": "string", "enum": ["under_50", "50_150", "150_300", "300_plus"] },
+      "class": "preference",
+      "retention": "session",
+      "derive": true
+    },
+    {
+      "id": "x-gift_recipient",
+      "scope": "context:x-gift_recipient.read",
+      "ask": "Shopping for someone else today?",
+      "why": "We'll use their sizes, not yours, and won't save them.",
+      "feature": "gift_mode",
+      "schema": {
+        "type": "object",
+        "properties": { "relation": { "type": "string" }, "sizes": { "type": "object" } }
+      },
+      "class": "people",
+      "retention": "session",
+      "derive": false,
+      "about": "other"
+    }
+  ],
+  "offers": [
+    {
+      "id": "purchases",
+      "scope": "context:purchases.offer",
+      "what": "What you bought, when, and whether you kept or returned it.",
+      "why": "Your assistant knows the jacket you own and the size that actually fit.",
+      "schema": { "type": "array", "items": { "type": "object" } },
+      "class": "preference",
+      "provenance": "observed"
+    },
+    {
+      "id": "x-warranties",
+      "scope": "context:x-warranties.offer",
+      "what": "Warranty end dates and return windows for things you bought.",
+      "why": "Ask your assistant \"is the tent still under warranty?\" and get an answer.",
+      "schema": { "type": "array", "items": { "type": "object", "properties": { "item": { "type": "string" }, "warranty_until": { "type": "string", "format": "date" } } } },
+      "class": "preference",
+      "provenance": "stated"
+    },
+    {
+      "id": "x-confirmed_sizes",
+      "scope": "context:x-confirmed_sizes.offer",
+      "what": "Sizes you kept versus sizes you returned, per brand.",
+      "why": "More reliable than what you think your size is.",
+      "schema": { "type": "object" },
+      "class": "preference",
+      "provenance": "derived"
+    }
+  ],
+  "endpoints": {
+    "paste": "https://northwind.example/context/paste",
+    "manage": "https://northwind.example/account/context",
+    "revoke": "https://northwind.example/account/context/revoke"
+  }
+}
