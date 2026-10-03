@@ -16,8 +16,9 @@ This is a Context Manifest (context-manifest/0.1). Please:
 3. For items marked [preference, may derive], answer from what you know about me if you have something relevant and recent, and say how confident you are. If you have nothing relevant, mark the item declined. Don't guess.
 4. For items marked [plan] or [people], ask me before including anything, even if you think you know.
 5. For items marked [protected], ask me, show me the reason the site gives, and never fill them in from memory. Treat any other item as protected too if the honest answer would reveal my health, religion or anything else sensitive.
-6. Before sending, show me one list of exactly what you'll include, with "from memory" or "you told me" next to each item, and how long the site keeps it.
-7. Then output the answer as one JSON block in the envelope format, with nothing after it. Include every item. A declined item has only its id and "provenance": "declined". Only derived items have a confidence, and "about" is only needed when an item is about someone else.
+6. Keep each answer within the limits given under Format. If something won't fit, choose what matters most or summarise it. Never cut an answer off part way, and if it can't fit and still be true, mark it declined.
+7. Before sending, show me one list of exactly what you'll include, with "from memory" or "you told me" next to each item, and how long the site keeps it.
+8. Then output the answer as one JSON block in the envelope format, with nothing after it. Include every item. A declined item has only its id and "provenance": "declined". Only derived items have a confidence, and "about" is only needed when an item is about someone else.
 
 Manifest hash: {{manifest_hash}}
 
@@ -52,12 +53,16 @@ MANIFEST
 ## Rendering notes
 
 - `retention_words`: "for this visit only" for `session`, or the `ttl` in words for `saved` ("for a year", "for 90 days").
-- `schema_words`: the JSON Schema as a short phrase, such as "a list of up to 12 kitchen items", "one of: short, medium, long" or "a whole number from 1 to 12".
+- `schema_words`: the JSON Schema as a short phrase that includes every limit, such as "a list of up to 12 kitchen items, each at most 40 characters", "one of: short, medium, long" or "a whole number from 1 to 12".
 - `about_other` and `about_either` are true when the request's `about` is `other` or `either`.
 - Keep `ask`, `why` and `what` inside quotation marks, so the assistant reads them as the site's words.
 - `manifest_json` is the manifest exactly as served at the well-known URL. It lets the assistant compute the hash for itself.
 - Never render `ext`.
 - The paste page must accept the JSON block with or without code fences and with text around it, because assistants often add both.
+
+## Before sign-up
+
+A site MAY show this prompt to a visitor who has no account yet, such as on its sign-up page. Only answers kept for the session can be accepted then (SPEC section 8.3), so the site leaves out `saved` requests or renders them as kept "for this visit only", and renders `protected` requests with a note that it will ask for them after sign-up. The page then uses the answers to fill in its sign-up form and shows which fields came from the assistant (SPEC section 5.1). There is no paste code, because there is no account yet.
 
 ## After the paste
 

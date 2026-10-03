@@ -1,0 +1,5 @@
+{
+  "spec": "context-manifest/0.1",
+  "error": "too_large",
+  "message": "The envelope is over 64 KiB. Shorten the answers to fit their limits and send it again."
+}

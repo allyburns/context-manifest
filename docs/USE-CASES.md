@@ -11,7 +11,7 @@ In most sectors, sites would ask for preferences and plans, and could give back 
 | Travel | `seat_preferences`, `stay_preferences`, `travel_plans`, `party` as counts, `accessibility_needs` | the itinerary, places stayed, preferred airports |
 | Food and recipes | `diet`, `allergies`, `household_size`, `equipment`, `time_budget` | what the user cooked and how they rated it, what they usually have in |
 | Learning | prior knowledge, goals, `time_budget`, `languages` | progress by topic, where the user got stuck |
-| Software onboarding | `role`, `team_size`, `tools`, `zoneinfo`, working hours | workspace conventions, active projects, integrations in use |
+| Software onboarding | `role`, `team_size`, `tools`, how work is tracked today, working hours | workspace conventions, active projects, integrations in use |
 | Customer support | `devices`, steps already tried, when the fault started | past ticket outcomes, outages, engineer visits |
 | Local services and loyalty | usual order, preferred branch, group size | visit history, reward balance |
 | Health and fitness | goals, equipment; anything clinical is protected | appointment dates, workout logs without medical detail |

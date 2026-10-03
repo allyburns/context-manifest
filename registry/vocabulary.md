@@ -10,8 +10,8 @@ Where an established name exists, the mapping column gives it: an OpenID Connect
 
 | id | meaning | mapping |
 |---|---|---|
-| `locale` | preferred language and region tag | OIDC `locale` |
-| `zoneinfo` | IANA time zone | OIDC `zoneinfo` |
+| `locale` | preferred language and region tag. Usually available from the browser's `Accept-Language` header (SPEC section 4.2). | OIDC `locale` |
+| `zoneinfo` | IANA time zone. Usually available from the browser (SPEC section 4.2). | OIDC `zoneinfo` |
 | `languages` | languages the user reads or speaks | schema.org `knowsLanguage` |
 | `interests` | topics the user likes | |
 | `tone` | preferred writing style, such as formal or casual | |

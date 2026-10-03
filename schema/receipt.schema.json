@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "properties": {
     "spec": { "type": "string", "pattern": "^context-manifest/0\\.1$" },
-    "kind": { "type": "string", "enum": ["share", "revocation", "held"] },
+    "kind": { "type": "string", "enum": ["share", "handoff", "revocation", "held"] },
     "receipt_id": { "type": "string", "maxLength": 64 },
     "manifest_hash": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
     "issued": { "type": "string", "format": "date-time" },
@@ -61,6 +61,15 @@
         "properties": { "id": { "type": "string" }, "fetch": { "type": "string", "enum": ["mcp", "http", "paste"] } }
       }
     },
+    "handoff": {
+      "type": "object",
+      "required": ["url", "expires"],
+      "additionalProperties": false,
+      "properties": {
+        "url": { "type": "string", "format": "uri", "maxLength": 2048 },
+        "expires": { "type": "string", "format": "date-time" }
+      }
+    },
     "manage": { "type": "string", "format": "uri" },
     "revoke": { "type": "string", "format": "uri" },
     "paste_code": { "type": "string", "pattern": "^([A-Z0-9]{1,6}-)?[A-Z2-7]{8,16}$" }
@@ -69,6 +78,22 @@
     {
       "if": { "properties": { "kind": { "const": "share" } }, "required": ["kind"] },
       "then": { "required": ["stored", "session_only", "declined", "rejected"], "not": { "required": ["deleted"] } }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "handoff" } }, "required": ["kind"] },
+      "then": {
+        "required": ["session_only", "declined", "rejected"],
+        "allOf": [
+          { "not": { "required": ["stored"] } },
+          { "not": { "required": ["deleted"] } },
+          { "not": { "required": ["offers"] } },
+          { "not": { "required": ["paste_code"] } }
+        ]
+      }
+    },
+    {
+      "if": { "properties": { "kind": { "const": "handoff" } }, "required": ["kind"] },
+      "else": { "not": { "required": ["handoff"] } }
     },
     {
       "if": { "properties": { "kind": { "const": "revocation" } }, "required": ["kind"] },

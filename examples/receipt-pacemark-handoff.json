@@ -1,0 +1,22 @@
+{
+  "spec": "context-manifest/0.1",
+  "kind": "handoff",
+  "receipt_id": "rcpt_01JAPMK4XR",
+  "manifest_hash": "sha256:5e5c3e47425dfd17d6d99b265d559b1aac25dfebd5a7f63c4f7061520217ad3e",
+  "issued": "2026-10-03T19:42:10Z",
+  "session_only": [
+    "x-running_experience",
+    "time_budget",
+    "x-target_race",
+    "equipment"
+  ],
+  "declined": [
+    "health_conditions"
+  ],
+  "rejected": [],
+  "handoff": {
+    "url": "https://pacemark.example/start/7XQ2MAKDGPZB6WTN3HRV5CYJQF",
+    "expires": "2026-10-03T20:42:10Z"
+  },
+  "manage": "https://pacemark.example/context"
+}

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1 draft, revised 3 October 2026
+
+Still `context-manifest/0.1`: the draft has no implementations yet, so these changes don't take a new version number.
+
+- **Handoff before sign-up.** A new `endpoints.handoff` and MCP tool `start_handoff` accept answers without an account and return a `handoff` receipt with a single-use URL. Only session answers can be handed off, protected requests are declined, and the URL expires within an hour (SPEC section 8.4). The paste flow also works before sign-in.
+- **Values the user submits.** A session value the user sees and submits on the site's own form becomes information they entered, and the site must show which fields came from their assistant (SPEC section 5.1).
+- **Bounded values.** Every part of a requested value must have a limit no higher than the site accepts. Agents fit answers by choosing or summarising, sites reject what doesn't fit, and envelopes stay under 64 KiB, with a new `too_large` error (SPEC section 3.3).
+- **Discovery from the page.** `<link rel="context-manifest">` and a matching `Link` header, for assistants that read pages rather than well-known paths.
+- **Don't ask for what the browser knows.** Sites should not request the time zone or language unless the browser's answer is often wrong for the purpose.
+- New example: sign-up for a running app, with a handoff envelope, a handoff receipt and a `too_large` error. Every example manifest now bounds its values, so the food example's hash changed. The software example asks how work is tracked today instead of the time zone.
+- The validator checks bounded values, that each request's examples fit its schema, and the handoff rules.
+
 ## 0.1 (draft, October 2026)
 
 First public draft.

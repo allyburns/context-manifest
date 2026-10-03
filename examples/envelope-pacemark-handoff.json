@@ -1,0 +1,53 @@
+{
+  "spec": "context-manifest/0.1",
+  "manifest_hash": "sha256:5e5c3e47425dfd17d6d99b265d559b1aac25dfebd5a7f63c4f7061520217ad3e",
+  "sent": "2026-10-03T19:42:08Z",
+  "agent": {
+    "name": "Claude",
+    "client": "claude.ai",
+    "account_hint": "j…@…"
+  },
+  "about": "self",
+  "answers": [
+    {
+      "id": "x-running_experience",
+      "value": "returning",
+      "provenance": "derived",
+      "confidence": 0.75,
+      "asked_user": false,
+      "retention": "session"
+    },
+    {
+      "id": "time_budget",
+      "value": 45,
+      "provenance": "derived",
+      "confidence": 0.8,
+      "asked_user": false,
+      "retention": "session"
+    },
+    {
+      "id": "x-target_race",
+      "value": {
+        "distance": "half_marathon",
+        "date": "2027-03-21"
+      },
+      "provenance": "stated",
+      "asked_user": true,
+      "retention": "session"
+    },
+    {
+      "id": "equipment",
+      "value": [
+        "gps_watch"
+      ],
+      "provenance": "derived",
+      "confidence": 0.65,
+      "asked_user": false,
+      "retention": "session"
+    },
+    {
+      "id": "health_conditions",
+      "provenance": "declined"
+    }
+  ]
+}

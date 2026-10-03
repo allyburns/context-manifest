@@ -27,6 +27,7 @@
       "properties": {
         "mcp": { "type": "string", "format": "uri" },
         "share": { "type": "string", "format": "uri" },
+        "handoff": { "type": "string", "format": "uri" },
         "paste": { "type": "string", "format": "uri" },
         "manage": { "type": "string", "format": "uri" },
         "revoke": { "type": "string", "format": "uri" }
@@ -48,7 +49,7 @@
         "properties": {
           "endpoints": {
             "required": ["manage"],
-            "anyOf": [{ "required": ["mcp"] }, { "required": ["share"] }, { "required": ["paste"] }]
+            "anyOf": [{ "required": ["mcp"] }, { "required": ["share"] }, { "required": ["handoff"] }, { "required": ["paste"] }]
           }
         }
       }

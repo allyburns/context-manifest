@@ -17,6 +17,7 @@
       "schema": {
         "type": "object",
         "required": ["pattern"],
+        "additionalProperties": false,
         "properties": {
           "pattern": { "type": "string", "enum": ["no restrictions", "vegetarian", "vegan", "pescatarian"] },
           "dislikes": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 20 }
@@ -65,6 +66,7 @@
         "items": {
           "type": "object",
           "required": ["date"],
+          "additionalProperties": false,
           "properties": {
             "date": { "type": "string", "format": "date" },
             "occasion": { "type": "string", "maxLength": 60 }

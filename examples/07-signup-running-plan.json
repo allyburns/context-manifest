@@ -1,0 +1,115 @@
+{
+  "spec": "context-manifest/0.1",
+  "app": {
+    "name": "Pacemark",
+    "url": "https://pacemark.example",
+    "operator": "Pacemark Ltd",
+    "privacy_policy": "https://pacemark.example/privacy"
+  },
+  "purpose": "Running plans that fit the time you have and the race you are training for.",
+  "requests": [
+    {
+      "id": "x-running_experience",
+      "scope": "context:x-running_experience.read",
+      "ask": "How much running do you do at the moment?",
+      "why": "Your first week starts at the right level, so it isn't too easy or too hard.",
+      "feature": "first_plan",
+      "schema": { "type": "string", "enum": ["new", "returning", "regular", "racing"] },
+      "class": "preference",
+      "retention": "session",
+      "derive": true,
+      "examples": ["returning"]
+    },
+    {
+      "id": "time_budget",
+      "scope": "context:time_budget.read",
+      "ask": "How many minutes can you usually spare for a run?",
+      "why": "No session in your plan is longer than this.",
+      "feature": "first_plan",
+      "schema": { "type": "integer", "minimum": 10, "maximum": 180 },
+      "class": "preference",
+      "retention": "session",
+      "derive": true,
+      "examples": [45]
+    },
+    {
+      "id": "x-target_race",
+      "scope": "context:x-target_race.read",
+      "ask": "Are you training for a race? If so, which distance, and when is it?",
+      "why": "Your plan counts back from race day, with lighter weeks before it.",
+      "feature": "race_plan",
+      "schema": {
+        "type": "object",
+        "required": ["distance"],
+        "additionalProperties": false,
+        "properties": {
+          "distance": { "type": "string", "enum": ["5k", "10k", "half_marathon", "marathon", "other"] },
+          "date": { "type": "string", "format": "date" }
+        }
+      },
+      "class": "plan",
+      "retention": "session",
+      "derive": false,
+      "examples": [{ "distance": "half_marathon", "date": "2027-03-21" }]
+    },
+    {
+      "id": "equipment",
+      "scope": "context:equipment.read",
+      "ask": "Which of these do you have to hand?",
+      "why": "Speed sessions use a treadmill or track only if you have one.",
+      "feature": "first_plan",
+      "schema": {
+        "type": "array",
+        "maxItems": 5,
+        "uniqueItems": true,
+        "items": { "type": "string", "enum": ["gps_watch", "heart_rate_monitor", "treadmill", "track", "gym"] }
+      },
+      "class": "preference",
+      "retention": "session",
+      "derive": true,
+      "examples": [["gps_watch"]]
+    },
+    {
+      "id": "health_conditions",
+      "scope": "context:health_conditions.read",
+      "ask": "Is there an injury or condition your plan should work around?",
+      "why": "Sessions that would aggravate it are swapped for ones that won't.",
+      "feature": "first_plan",
+      "schema": { "type": "string", "maxLength": 200 },
+      "class": "protected",
+      "retention": "session",
+      "derive": false
+    }
+  ],
+  "offers": [
+    {
+      "id": "x-training_log",
+      "scope": "context:x-training_log.offer",
+      "what": "Runs you logged: date, distance, time and how hard each one felt.",
+      "why": "Your assistant knows what training you have done when you ask it for advice.",
+      "schema": {
+        "type": "array",
+        "maxItems": 500,
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "date": { "type": "string", "format": "date" },
+            "km": { "type": "number", "minimum": 0, "maximum": 300 },
+            "minutes": { "type": "integer", "minimum": 0, "maximum": 2000 },
+            "effort": { "type": "integer", "minimum": 1, "maximum": 10 }
+          }
+        }
+      },
+      "class": "preference",
+      "provenance": "stated"
+    }
+  ],
+  "endpoints": {
+    "mcp": "https://mcp.pacemark.example/public",
+    "share": "https://pacemark.example/api/context",
+    "handoff": "https://pacemark.example/api/context/handoff",
+    "paste": "https://pacemark.example/start/assistant",
+    "manage": "https://pacemark.example/context"
+  }
+}

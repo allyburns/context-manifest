@@ -59,7 +59,11 @@ People move house, change jobs and stop being vegetarian. A `ttl` on saved value
 
 A model can make up a plausible value for a field it has no memory of. `protected`, `people` and `plan` requests are never derived, which rules out the most damaging cases. For preferences, `confidence` and the site's threshold are the guard, and the client guidance tells agents to decline rather than guess.
 
-### C4. The user corrects the site, not the agent (addressed by offers)
+### C4. Answers that don't fit (addressed)
+
+The agent knows the user follows thirty writers, and the site's form takes twelve. If the agent sends all thirty, the site either rejects the answer or cuts it, and a cut value can be wrong: half a list, or a sentence that stops mid-word. Every part of a requested value must now have a limit in its schema, no higher than the site's own form accepts. The agent shortens by choosing or summarising, and declines if the answer stops being true. The site rejects anything over the limit with `schema_mismatch` rather than trimming it quietly, and the validator rejects any example manifest with an unbounded field.
+
+### C5. The user corrects the site, not the agent (addressed by offers)
 
 The user fixes their size on the site, but the agent still has the old one. Offers exist for this. In the shopping example, `x-confirmed_sizes` returns the corrected sizes to the agent. Sites that ask for something should offer the corrected value back.
 
@@ -105,7 +109,13 @@ Session values can leak through logs, analytics, model training or the screen a 
 
 The user revokes their interests, but the site's recommendations have already learned from them. Revocation must delete values derived solely from what was revoked, and the revocation receipt lists them in `also_deleted`. Aggregate statistics that no longer identify the user may be kept.
 
-### E4. The agent's own record (addressed)
+### E4. Before there is an account (mitigated)
+
+A first visit usually comes before sign-up, so there is no account to authenticate the agent's call against. The handoff binding lets the agent send answers anyway, and the site returns a URL that works for whoever opens it first. That URL is a bearer token: if it leaks from a chat transcript or a shared screen, someone else could claim the answers.
+
+The rules limit what a leak can reveal and for how long. Only session answers can be handed off, and protected requests must be declined. The token has at least 128 bits of randomness and works once. It expires within an hour, a `GET` shows nothing, and claiming needs a separate request, ideally a button press, so link previews can't use it up. The site keeps claimed answers with that browser session for at most a day unless the user submits them on a form. An agent opens the URL only in the user's own browser. What is left is a small window in which a leaked link reveals a handful of preferences, which is why nothing sensitive can travel this way.
+
+### E5. The agent's own record (addressed)
 
 The site deletes the data, but the agent still remembers sharing it. The agent keeps the receipt and the list of ids it shared, not the values it derived, and keeps the revocation receipt afterwards. "What does Saltbox know about me?" can then be answered by the agent alone.
 

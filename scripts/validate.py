@@ -12,12 +12,18 @@ File name decides the schema:
 Cross-checks:
   - each scope is context:<id>.read or context:<id>.offer
   - each id is a core id from registry/vocabulary.md or starts with x-
+  - every request schema is bounded (SPEC.md section 3.3): strings have a
+    maxLength, enum, const or date format; arrays have maxItems and items;
+    objects have additionalProperties false; and each example fits the schema
   - each envelope, receipt and offer delivery names the hash of a manifest
     in examples/, computed as SPEC.md section 6 describes
   - an envelope answers every request exactly once, derives only where the
     manifest allows it, and never upgrades retention
   - a share receipt puts every answered id in exactly one bucket, and its
     expiry dates follow the manifest's ttl when the ttl is in days or weeks
+  - a handoff receipt does the same without a stored bucket, expires within
+    60 minutes, and answers an envelope with only session answers and every
+    protected request declined (SPEC.md section 8.4)
   - an offer delivery contains only accepted offers, each valid against the
     offer's schema in the manifest
 
@@ -75,8 +81,47 @@ def core_ids():
     return ids
 
 
+BOUNDED_FORMATS = {"date", "time", "date-time"}
+
+
+def unbounded(schema, where):
+    """SPEC.md section 3.3: every part of a request's value has an upper size."""
+    if not isinstance(schema, dict):
+        return [f"{where}: schema is not an object"]
+    if "enum" in schema or "const" in schema:
+        return []
+    problems = []
+    for key in ("anyOf", "oneOf", "allOf"):
+        for i, branch in enumerate(schema.get(key, [])):
+            problems.extend(unbounded(branch, f"{where}/{key}[{i}]"))
+    types = schema.get("type")
+    types = types if isinstance(types, list) else [types] if types else []
+    if not types and not any(k in schema for k in ("anyOf", "oneOf", "allOf")):
+        problems.append(f"{where}: no type, so nothing limits the value")
+    if "string" in types and "maxLength" not in schema and schema.get("format") not in BOUNDED_FORMATS:
+        problems.append(f"{where}: string has no maxLength")
+    if "array" in types:
+        if "maxItems" not in schema:
+            problems.append(f"{where}: array has no maxItems")
+        if "items" not in schema:
+            problems.append(f"{where}: array has no items schema")
+        else:
+            problems.extend(unbounded(schema["items"], f"{where}[]"))
+    if "object" in types:
+        if schema.get("additionalProperties") is not False:
+            problems.append(f"{where}: object does not set additionalProperties to false")
+        for name, prop in schema.get("properties", {}).items():
+            problems.extend(unbounded(prop, f"{where}.{name}"))
+    return problems
+
+
 def check_manifest(m, core):
     problems = []
+    for r in m.get("requests", []):
+        problems.extend(f"request {p}" for p in unbounded(r["schema"], r["id"]))
+        for i, example in enumerate(r.get("examples", [])):
+            for err in Draft202012Validator(r["schema"], format_checker=FormatChecker()).iter_errors(example):
+                problems.append(f"request {r['id']} example {i}: {err.message}")
     for kind, items, suffix in (("request", m.get("requests", []), "read"), ("offer", m.get("offers", []), "offer")):
         for item in items:
             if item["scope"] != f"context:{item['id']}.{suffix}":
@@ -120,6 +165,29 @@ def check_receipt(rcpt, env):
     for a in env["answers"]:
         if buckets.count(a["id"]) != 1:
             problems.append(f"id {a['id']} appears in {buckets.count(a['id'])} receipt buckets, expected one")
+    return problems
+
+
+def check_handoff(rcpt, env, manifest):
+    """SPEC.md section 8.4 and ENVELOPE.md section 3."""
+    problems = []
+    classes = {r["id"]: r["class"] for r in manifest["requests"]}
+    for a in env["answers"]:
+        if a["provenance"] == "declined":
+            continue
+        if a.get("retention") != "session":
+            problems.append(f"handoff answer {a['id']} is not session only")
+        if classes.get(a["id"]) == "protected":
+            problems.append(f"handoff answer {a['id']} is protected, so it must be declined")
+    buckets = rcpt["session_only"] + rcpt["declined"] + [r["id"] for r in rcpt["rejected"]]
+    for a in env["answers"]:
+        if buckets.count(a["id"]) != 1:
+            problems.append(f"id {a['id']} appears in {buckets.count(a['id'])} receipt buckets, expected one")
+    if "handoff" in rcpt:
+        issued = datetime.datetime.fromisoformat(rcpt["issued"].replace("Z", "+00:00"))
+        expires = datetime.datetime.fromisoformat(rcpt["handoff"]["expires"].replace("Z", "+00:00"))
+        if not issued < expires <= issued + datetime.timedelta(minutes=60):
+            problems.append("handoff.expires must be after issued and no more than 60 minutes later")
     return problems
 
 
@@ -211,6 +279,11 @@ def main():
             results[path][1].extend(check_expiry(doc, manifests[h]))
             if h in envelopes:
                 results[path][1].extend(check_receipt(doc, envelopes[h]))
+        elif kind == "receipt" and h in manifests and doc.get("kind") == "handoff":
+            if h in envelopes:
+                results[path][1].extend(check_handoff(doc, envelopes[h], manifests[h]))
+            else:
+                results[path][1].append("handoff receipt has no envelope in examples/ to check against")
         elif kind == "offer" and h in manifests:
             results[path][1].extend(check_offer_delivery(doc, manifests[h], envelopes.get(h)))
 

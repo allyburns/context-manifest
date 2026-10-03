@@ -9,7 +9,7 @@
     "spec": { "type": "string", "pattern": "^context-manifest/0\\.1$" },
     "error": {
       "type": "string",
-      "enum": ["unknown_manifest_hash", "invalid_envelope", "unauthenticated", "forbidden", "not_found", "rate_limited", "server_error"]
+      "enum": ["unknown_manifest_hash", "invalid_envelope", "too_large", "unauthenticated", "forbidden", "not_found", "rate_limited", "server_error"]
     },
     "message": { "type": "string", "maxLength": 200 },
     "ids": { "type": "array", "items": { "type": "string" } }

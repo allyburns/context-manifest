@@ -9,7 +9,7 @@ The snippets below are shortened. The complete files are in `examples/`.
 ```json
 {
   "spec": "context-manifest/0.1",
-  "manifest_hash": "sha256:198e8431…",
+  "manifest_hash": "sha256:a16f7452…",
   "sent": "2026-09-26T21:14:00Z",
   "agent": { "name": "Claude", "client": "claude.ai", "account_hint": "a…@…" },
   "about": "self",
@@ -58,7 +58,7 @@ Rules:
   "spec": "context-manifest/0.1",
   "kind": "share",
   "receipt_id": "rcpt_01J9SBX3QK",
-  "manifest_hash": "sha256:198e8431…",
+  "manifest_hash": "sha256:a16f7452…",
   "issued": "2026-09-26T21:14:02Z",
   "stored": [
     { "id": "diet", "retention": "saved", "expires": "2027-09-26T21:14:02Z", "provenance": "derived" }
@@ -75,15 +75,44 @@ Rules:
 
 Rules:
 
-- `kind` is `share` for a receipt that answers an envelope, `revocation` for one that confirms a deletion (section 3), and `held` for one that answers `get_shared_context`. A `held` receipt has the same `stored` and `session_only` lists as a share receipt, describing everything the site holds for the user now.
-- A share receipt MUST list every id from the envelope in exactly one of `stored`, `session_only`, `declined` or `rejected`. A rejected id has a `reason`: `schema_mismatch`, `unknown_id`, `retention_upgrade`, `low_confidence` or `other`.
+- `kind` is `share` for a receipt that answers an envelope, `handoff` for one that answers an envelope sent before the user has an account (section 3), `revocation` for one that confirms a deletion (section 4), and `held` for one that answers `get_shared_context`. A `held` receipt has the same `stored` and `session_only` lists as a share receipt, describing everything the site holds for the user now.
+- A share receipt MUST list every id from the envelope in exactly one of `stored`, `session_only`, `declined` or `rejected`. A rejected id has a `reason`: `schema_mismatch` (including a value over its limits, SPEC section 3.3), `unknown_id`, `retention_upgrade`, `low_confidence` or `other`.
 - `expires` MUST be computed from the manifest's `ttl`, not from a site default.
 - A stored value about someone other than the user MUST have `about: "other"`.
 - Each entry in `offers` says how the agent can collect the offer: `mcp` (the `get_offer` tool), `http` (`GET endpoints.share?offers=<id>`) or `paste` (the paste page shows it).
 - `paste_code` appears in the paste flow. The user can give it to their assistant to record the receipt. It follows the rules in SPEC section 7.
 - Agents SHOULD keep the receipt with their record of having shared, so a later question such as "what does Saltbox know about me?" can be answered without contacting the site.
 
-## 3. Revocation
+## 3. Handoff receipt
+
+An envelope sent to `endpoints.handoff` or the `start_handoff` tool (SPEC section 8.4) gets a receipt with `kind: "handoff"`:
+
+```json
+{
+  "spec": "context-manifest/0.1",
+  "kind": "handoff",
+  "receipt_id": "rcpt_01JAPMK4XR",
+  "manifest_hash": "sha256:5e5c3e47…",
+  "issued": "2026-10-03T19:42:10Z",
+  "session_only": ["x-running_experience", "time_budget", "x-target_race", "equipment"],
+  "declined": ["health_conditions"],
+  "rejected": [],
+  "handoff": {
+    "url": "https://pacemark.example/start/7XQ2MAKDGPZB6WTN3HRV5CYJQF",
+    "expires": "2026-10-03T20:42:10Z"
+  },
+  "manage": "https://pacemark.example/context"
+}
+```
+
+Rules:
+
+- A handoff receipt MUST list every id from the envelope in exactly one of `session_only`, `declined` or `rejected`. It has no `stored` list, because nothing is saved before the user has an account.
+- `handoff.url` is where the user continues in their browser, and `handoff.expires` is when it stops working: no more than 60 minutes after `issued`.
+- A handoff receipt has no `paste_code` and no `offers`. Offers need an account, so an agent asks for them again after sign-up.
+- A receipt for a paste made before sign-in (SPEC section 8.3) is a handoff receipt without the `handoff` member.
+
+## 4. Revocation
 
 The agent revokes with `revoke({ "ids": ["diet"] })` or `revoke({ "all": true })` over MCP, or with the same body sent to `POST endpoints.revoke`. The site replies with a revocation receipt:
 
@@ -92,7 +121,7 @@ The agent revokes with `revoke({ "ids": ["diet"] })` or `revoke({ "all": true })
   "spec": "context-manifest/0.1",
   "kind": "revocation",
   "receipt_id": "rcpt_01JA2SBX9TW",
-  "manifest_hash": "sha256:198e8431…",
+  "manifest_hash": "sha256:a16f7452…",
   "issued": "2026-11-02T09:30:11Z",
   "deleted": [
     { "id": "diet", "also_deleted": ["x-recommended_for_you"] },
@@ -103,12 +132,12 @@ The agent revokes with `revoke({ "ids": ["diet"] })` or `revoke({ "all": true })
 
 `also_deleted` lists values the site removed because they were derived solely from what was revoked. A site MUST NOT keep a derived value whose only inputs were revoked. It MAY keep aggregate statistics that no longer identify the user.
 
-## 4. Offer delivery (site to agent)
+## 5. Offer delivery (site to agent)
 
 ```json
 {
   "spec": "context-manifest/0.1",
-  "manifest_hash": "sha256:198e8431…",
+  "manifest_hash": "sha256:a16f7452…",
   "origin": "https://saltbox.example",
   "issued": "2026-10-14T18:02:40Z",
   "offers": [
@@ -126,12 +155,12 @@ The agent revokes with `revoke({ "ids": ["diet"] })` or `revoke({ "all": true })
 - `value` MUST be valid against the offer's `schema` in the manifest.
 - `as_of` is when the value was last true. The agent stores it alongside the value, so it can tell recent records from old ones.
 
-## 5. What the agent keeps
+## 6. What the agent keeps
 
 For each site, the agent SHOULD keep the manifest hash, the receipt ids, the ids it shared with their provenance, the offers accepted, and the manage and revoke URLs.
 
 It SHOULD NOT keep a separate copy of values it derived, because it already holds the memory they came from. It SHOULD keep values the user stated during the flow, since the user has now told it those things.
 
-## 6. Session
+## 7. Session
 
 The site defines "session" in plain language at `endpoints.manage`. Reasonable definitions include "until you log out" and "until you close the tab, plus 30 minutes". A site whose session lasts thirty days is not describing a session. An agent MAY refuse `session` retention from a site whose session lasts longer than 24 hours, and treat the request as `saved` when it asks the user for consent.

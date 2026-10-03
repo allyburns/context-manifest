@@ -16,8 +16,9 @@
       "feature": "fit_filter",
       "schema": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
-          "top": { "type": "string" }, "bottom": { "type": "string" }, "shoe": { "type": "string" },
+          "top": { "type": "string", "maxLength": 12 }, "bottom": { "type": "string", "maxLength": 12 }, "shoe": { "type": "string", "maxLength": 8 },
           "system": { "type": "string", "enum": ["UK", "EU", "US"] }
         }
       },
@@ -33,7 +34,7 @@
       "ask": "Anything you avoid on principle?",
       "why": "Filters out materials and brands you'd rather not see.",
       "feature": "catalogue_filter",
-      "schema": { "type": "array", "items": { "type": "string", "enum": ["no_leather", "no_down", "no_wool", "recycled_only", "no_fast_fashion"] } },
+      "schema": { "type": "array", "items": { "type": "string", "enum": ["no_leather", "no_down", "no_wool", "recycled_only", "no_fast_fashion"] }, "maxItems": 5, "uniqueItems": true },
       "class": "preference",
       "retention": "saved",
       "ttl": "P365D",
@@ -46,7 +47,7 @@
       "ask": "Any brands you don't want to see?",
       "why": "We'll leave them out of your results.",
       "feature": "catalogue_filter",
-      "schema": { "type": "array", "items": { "type": "string" }, "maxItems": 20 },
+      "schema": { "type": "array", "items": { "type": "string", "maxLength": 40 }, "maxItems": 20 },
       "class": "preference",
       "retention": "saved",
       "ttl": "P365D",
@@ -71,7 +72,18 @@
       "feature": "gift_mode",
       "schema": {
         "type": "object",
-        "properties": { "relation": { "type": "string" }, "sizes": { "type": "object" } }
+        "additionalProperties": false,
+        "properties": {
+          "relation": { "type": "string", "enum": ["partner", "parent", "child", "sibling", "friend", "other"] },
+          "sizes": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "top": { "type": "string", "maxLength": 12 }, "bottom": { "type": "string", "maxLength": 12 }, "shoe": { "type": "string", "maxLength": 8 },
+              "system": { "type": "string", "enum": ["UK", "EU", "US"] }
+            }
+          }
+        }
       },
       "class": "people",
       "retention": "session",
