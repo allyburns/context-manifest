@@ -220,12 +220,12 @@ The site:
 
 - MUST reject an envelope that breaks either rule with `invalid_envelope`, naming the ids
 - MUST return a `handoff` receipt whose `handoff.url` contains a token with at least 128 bits of randomness, and SHOULD store only a hash of the token
-- MUST let the URL be claimed once. Claiming MUST need a request other than `GET`, and SHOULD need an action from the user, such as pressing a continue button, so that link previews and security scanners that fetch the URL can't use it up. A `GET` of the URL MUST NOT show the values.
+- MUST let the URL be claimed once. Claiming MUST need a request other than `GET`, and SHOULD need an action from the user, such as pressing a continue button, so that link previews and security scanners that fetch the URL can't use it up. A `GET` of the URL MUST NOT show the values. The page SHOULD show the user the values before they claim them, fetched by a request other than `GET` that leaves the URL unused, so that claiming is an informed choice rather than a leap.
 - MUST delete unclaimed values when `handoff.expires` passes, which MUST be no more than 60 minutes after the receipt is issued
 - after a claim, keeps the values with that browser session only. If no account is created, the session MUST end within 24 hours of the claim.
 - SHOULD rate-limit `endpoints.handoff` by network address
 
-The agent gives the URL to the user, and tells them how long it lasts. An agent that is acting in the user's own browser MAY open it there. Any other agent MUST NOT open it, because whoever opens it first receives the values. The agent keeps the receipt and SHOULD NOT keep the URL once it has expired.
+The agent gives the URL to the user, tells them how long it lasts, and SHOULD tell them to open it in the web browser they normally use: a browser built into a chat or email app can fail a site's checks for automated traffic, and the claimed values then sit in a browser the user will not keep using. An agent that is acting in the user's own browser MAY open it there. Any other agent MUST NOT open it, because whoever opens it first receives the values. The agent keeps the receipt and SHOULD NOT keep the URL once it has expired.
 
 Once the user has an account, the site's other bindings apply. Values the user submitted during sign-up are covered by section 5.1, and anything else from the handoff is discarded with the session.
 

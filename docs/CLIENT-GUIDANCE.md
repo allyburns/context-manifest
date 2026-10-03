@@ -58,6 +58,7 @@ If the user hasn't signed up to the site and the manifest has `endpoints.handoff
 - Send every answer as `session`, even where the manifest asks for `saved`, and say so on the consent screen.
 - Decline every `protected` request, and tell the user the site will ask for it after sign-up.
 - Give the user the URL from the receipt and say how long it lasts. Do not open it yourself unless you are acting in the user's own browser, because whoever opens it first gets the answers.
+- Suggest they open it in the browser they normally use. A browser built into a chat or email app can fail a site's checks for automated traffic, often at the sign-up step, after the answers have already been claimed into that browser.
 - Keep the receipt. Forget the URL once it has expired.
 
 ## 6. Offers
